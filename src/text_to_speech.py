@@ -1,0 +1,73 @@
+import sys
+import os
+import librosa
+import soundfile as sf
+import torch
+from functools import lru_cache
+
+# Manually specify the path to the `dupa` directory
+dupa_dir = "MARS5-TTS"  # Replace with the actual path to the `dupa` directory
+from inference import Mars5TTS, InferenceConfig as config_class
+sys.path.append(dupa_dir)
+
+BASE_VOICE_PATH = "maklowicz.wav"
+OUTPUT_PATH = "output_audio.wav"
+
+
+class TextToSpeech:
+    def __init__(
+        self,
+        voice_to_replicate=BASE_VOICE_PATH,  # TODO: validate input
+    ):
+        self._wav_path = ""
+        self._output_tensor = None
+        self._voice_to_replicate = voice_to_replicate
+        self.mars5 = self.load_model()
+
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def load_model(self):
+        return Mars5TTS.from_pretrained("CAMB-AI/MARS5-TTS")
+
+    def toSpeech(self, text):
+        # Now you can import the inference module
+        # The `mars5` contains the AR and NAR model, as well as inference code.
+        # The `config_class` contains tunable inference config settings like temperature.
+        # load reference audio between 1-12 seconds.
+        wav, sr = librosa.load(self._voice_to_replicate, sr=self.mars5.sr, mono=True)
+        wav = torch.from_numpy(wav)
+
+        # Pick whether you want a deep or shallow clone. Set to False if you don't know prompt transcript or want fast inference. Set to True if you know transcript and want highest quality.
+        deep_clone = True
+        # Below you can tune other inference settings, like top_k, temperature, top_p, etc...
+        cfg = config_class(
+            deep_clone=deep_clone,
+            rep_penalty_window=100,
+            top_k=100,
+            temperature=0.7,
+            freq_penalty=3,
+        )
+
+        ar_codes, self._output_tensor = self.mars5.tts(
+            "The quick brown rat.",
+            wav,
+            text,
+            cfg=cfg,  # TODO: what the fuck is that
+        )
+        # output_audio is (T,) shape float tensor corresponding to the 24kHz output audio.
+        # Save as .wav file
+        sf.write(OUTPUT_PATH, self._output_tensor.numpy(), samplerate=24000)
+
+    def get_wav(self):
+        return self._wav_path
+
+    def get_tensor(self):
+        return self._output_tensor
+
+
+if __name__ == "__main__":
+    speech = TextToSpeech()
+    speech.toSpeech(text="twoja stara robili w iglo eskimosi")
+    print(
+        f"Base Inference for text_to_speech.py is in path: {os.getcwd() + speech.get_wav()}"
+    )
