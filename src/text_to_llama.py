@@ -1,10 +1,7 @@
 from huggingface_hub import notebook_login
 from transformers import AutoTokenizer
-import transformers
-import torch
-from functools import lru_cache
 from typing import List, Dict
-
+import init_models
 
 # sequences = pipeline(
 #     'I have tomatoes, basil and cheese at home. What can I cook for dinner?\n',
@@ -19,29 +16,21 @@ from typing import List, Dict
 # for seq in sequences:
 #     print(f"Result: {seq['generated_text']}")
 
-MODEL_NAME = "meta-llama/Meta-Llama-3-8B-Instruct"
 
-@staticmethod
-@lru_cache(maxsize=1)
-def load_model(model_name):
-    return transformers.pipeline(
-            "text-generation",
-                model=model_name,
-                torch_dtype=torch.float16,
-            device_map="auto",
-            )
-    # tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-def define_message(who_is_llama: str = "You are a pirate chatbot who always responds in pirate speak!" , message: str ="Who are You?"):
+def define_message(
+    who_is_llama: str = "You are a pirate chatbot who always responds in pirate speak!",
+    message: str = "Who are You?",
+):
     return [
-    {"role": "system", "content": who_is_llama},
-    {"role": "user", "content": message},
-]
+        {"role": "system", "content": who_is_llama},
+        {"role": "user", "content": message},
+    ]
+
 
 def inference(pipeline, messages: List[Dict[str, str]]):
     terminators = [
         pipeline.tokenizer.eos_token_id,
-        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>"),
     ]
 
     outputs = pipeline(
@@ -58,7 +47,7 @@ def inference(pipeline, messages: List[Dict[str, str]]):
 if __name__ == "__main__":
     notebook_login()
 
-    llama = load_model(MODEL_NAME)
+    llama = init_models().llama
     llama_output = inference(llama, define_message())
 
     print(llama_output)

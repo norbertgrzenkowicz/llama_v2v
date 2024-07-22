@@ -4,11 +4,12 @@ import librosa
 import soundfile as sf
 import torch
 from functools import lru_cache
+import init_models
 
-# Manually specify the path to the `dupa` directory
-dupa_dir = "MARS5-TTS"  # Replace with the actual path to the `dupa` directory
-from inference import Mars5TTS, InferenceConfig as config_class
+dupa_dir = os.getcwd() + "/src/MARS5-TTS"
 sys.path.append(dupa_dir)
+
+from inference import Mars5TTS, InferenceConfig as config_class
 
 BASE_VOICE_PATH = "maklowicz.wav"
 OUTPUT_PATH = "output_audio.wav"
@@ -22,7 +23,7 @@ class TextToSpeech:
         self._wav_path = ""
         self._output_tensor = None
         self._voice_to_replicate = voice_to_replicate
-        self.mars5 = self.load_model()
+        self.mars5 = init_models().mars
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -55,10 +56,10 @@ class TextToSpeech:
             cfg=cfg,  # TODO: what the fuck is that
         )
         # output_audio is (T,) shape float tensor corresponding to the 24kHz output audio.
-        # Save as .wav file
-        sf.write(OUTPUT_PATH, self._output_tensor.numpy(), samplerate=24000)
 
     def get_wav(self):
+        # Save as .wav file
+        sf.write(OUTPUT_PATH, self._output_tensor.numpy(), samplerate=24000)
         return self._wav_path
 
     def get_tensor(self):
@@ -67,7 +68,7 @@ class TextToSpeech:
 
 if __name__ == "__main__":
     speech = TextToSpeech()
-    speech.toSpeech(text="twoja stara robili w iglo eskimosi")
+    speech.toSpeech(text="Hejka, co tam")
     print(
         f"Base Inference for text_to_speech.py is in path: {os.getcwd() + speech.get_wav()}"
     )

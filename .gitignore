@@ -1,0 +1,7 @@
+mars/
+src/__pycache__
+__pycache__
+*.mp4
+*.mp3
+*.wav
+MARS5-TTS
