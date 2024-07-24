@@ -31,10 +31,6 @@ class TextToSpeech:
         return Mars5TTS.from_pretrained("CAMB-AI/MARS5-TTS")
 
     def toSpeech(self, text):
-        # Now you can import the inference module
-        # The `mars5` contains the AR and NAR model, as well as inference code.
-        # The `config_class` contains tunable inference config settings like temperature.
-        # load reference audio between 1-12 seconds.
         wav, sr = librosa.load(self._voice_to_replicate, sr=self.mars5.sr, mono=True)
         wav = torch.from_numpy(wav)
 

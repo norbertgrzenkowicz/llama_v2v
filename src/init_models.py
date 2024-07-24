@@ -38,3 +38,7 @@ class load_models:
     @lru_cache
     def load_whisper(model_type: str = "small") -> whisper.Whisper:
         return whisper.load_model(model_type)
+
+
+if __name__ == "__main__":
+    models = load_models()
