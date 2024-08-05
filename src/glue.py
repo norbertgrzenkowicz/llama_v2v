@@ -5,7 +5,6 @@ import record
 
 
 def doStuff(SpeechPath: str):
-    # SpeechPath = record.record()
     speechedText = speech_to_text.get_text_from_speech(speech=SpeechPath)
     llamaAns = text_to_llama.inference(
         messages=text_to_llama.define_message(message=speechedText)

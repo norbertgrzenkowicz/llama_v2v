@@ -12,7 +12,7 @@ WAVE_OUTPUT_FILENAME = "output.wav"
 MP4_OUTPUT_FILENAME = "output.mp4"
 
 
-def record(saveTo: str = WAVE_OUTPUT_FILENAME) -> str:
+def record(saveToPath: str = WAVE_OUTPUT_FILENAME) -> str:
     audio = pyaudio.PyAudio()
 
     stream = audio.open(
@@ -32,7 +32,7 @@ def record(saveTo: str = WAVE_OUTPUT_FILENAME) -> str:
     stream.close()
     audio.terminate()
 
-    with wave.open(WAVE_OUTPUT_FILENAME, "wb") as wf:
+    with wave.open(saveToPath, "wb") as wf:
         wf.setnchannels(CHANNELS)
         wf.setsampwidth(audio.get_sample_size(FORMAT))
         wf.setframerate(RATE)
@@ -40,9 +40,9 @@ def record(saveTo: str = WAVE_OUTPUT_FILENAME) -> str:
 
     print("Audio data saved as WAV file.")
 
+    # Convert to MP4 Just in Case
     # input_audio = ffmpeg.input(WAVE_OUTPUT_FILENAME)
     # ffmpeg.output(input_audio, MP4_OUTPUT_FILENAME).run(overwrite_output=True)
-
     # print(f"Audio data converted to MP4 file: {MP4_OUTPUT_FILENAME}")
 
     return WAVE_OUTPUT_FILENAME

@@ -34,9 +34,7 @@ class TextToSpeech:
         wav, sr = librosa.load(self._voice_to_replicate, sr=self.mars5.sr, mono=True)
         wav = torch.from_numpy(wav)
 
-        # Pick whether you want a deep or shallow clone. Set to False if you don't know prompt transcript or want fast inference. Set to True if you know transcript and want highest quality.
         deep_clone = True
-        # Below you can tune other inference settings, like top_k, temperature, top_p, etc...
         cfg = config_class(
             deep_clone=deep_clone,
             rep_penalty_window=100,

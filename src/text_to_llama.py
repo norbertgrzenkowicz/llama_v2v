@@ -18,7 +18,7 @@ import init_models
 
 
 def define_message(
-    who_is_llama: str = "You are a pirate chatbot who always responds in pirate speak!",
+    who_is_llama: str = "You are a Gym bro which always respond normally but ends sentences with motivation speech.",
     message: str = "Who are You?",
 ):
     return [
